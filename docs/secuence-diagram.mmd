@@ -1,0 +1,47 @@
+sequenceDiagram
+    actor User
+    participant PolloTimer
+    participant BD
+    participant DeepSeek
+
+    %% Iniciar temporizador
+    User->>PolloTimer: Click en Play
+    activate PolloTimer
+    PolloTimer->>BD: Registrar inicio del timer
+    BD-->>PolloTimer: Confirmación
+    PolloTimer-->>User: Cambiar icono Play → Pause
+    deactivate PolloTimer
+
+    %% Pausar temporizador
+    User->>PolloTimer: Click en Pause
+    activate PolloTimer
+    PolloTimer->>BD: Registrar pausa del timer
+    BD-->>PolloTimer: Confirmación
+    PolloTimer-->>User: Cambiar icono Pause → Play
+    deactivate PolloTimer
+
+    %% Detener temporizador
+    User->>PolloTimer: Click en Stop
+    activate PolloTimer
+    PolloTimer->>BD: Registrar fin del timer
+    BD-->>PolloTimer: Confirmación
+    PolloTimer-->>User: Restablecer icono a Play
+    deactivate PolloTimer
+
+    %% Ver histórico
+    User->>PolloTimer: Click en Histórico
+    activate PolloTimer
+    PolloTimer->>BD: Obtener registros
+    BD-->>PolloTimer: Lista de registros
+    PolloTimer-->>User: Abrir ventana del histórico
+    deactivate PolloTimer
+
+    %% Análisis con IA
+    User->>PolloTimer: Click en AI
+    activate PolloTimer
+    PolloTimer->>BD: Obtener registros
+    BD-->>PolloTimer: Lista de registros
+    PolloTimer->>DeepSeek: Enviar registros para análisis
+    DeepSeek-->>PolloTimer: Resultado del análisis
+    PolloTimer-->>User: Mostrar análisis
+    deactivate PolloTimer
