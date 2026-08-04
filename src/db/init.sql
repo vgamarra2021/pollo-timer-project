@@ -1,3 +1,6 @@
+DROP TABLE IF EXISTS action;
+DROP TABLE IF EXISTS session;
+
 CREATE TABLE IF NOT EXISTS "action" (
 	"action_id" INTEGER NOT NULL,
 	"created_at" TIMESTAMP,

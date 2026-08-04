@@ -1,0 +1,4 @@
+requests
+flet
+sqlalchemy
+python-dotenv
