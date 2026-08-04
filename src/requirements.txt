@@ -2,3 +2,4 @@ requests
 flet
 sqlalchemy
 python-dotenv
+openai

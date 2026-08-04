@@ -3,8 +3,11 @@ Este proyecto sirve como MVP para registrar el avance del pollo en programación
 
 ## TAREAS
 
-Inicializar BD con el init.sql
+Inicializar BD con el init.sql (Listo)
 Instalar y configurar dotenv (Listo)
-Crear function para llamar a DEEP SEEK
-Crear function para mapear los datos de BD antes de enviarlos a la IA
-Crear lógica de los botones
+Crear function para llamar a DEEP SEEK (Gabriel):
+-https://api-docs.deepseek.com/
+
+
+Crear function para mapear los datos de BD antes de enviarlos a la IA (Juntos)
+Crear lógica de los botones (Juntos)
