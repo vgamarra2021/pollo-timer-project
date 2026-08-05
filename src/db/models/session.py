@@ -8,7 +8,6 @@ from sqlalchemy.orm import relationship
 
 from db.models.base import Base
 
-
 class Session(Base):
     __tablename__ = "session"
     session_id: Mapped[int] = mapped_column(primary_key=True)

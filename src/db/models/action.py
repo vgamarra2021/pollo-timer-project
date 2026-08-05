@@ -8,7 +8,6 @@ from sqlalchemy.orm import relationship
 
 from db.models.base import Base
 
-
 class Action(Base):
     __tablename__ = "action"
     action_id: Mapped[int] = mapped_column(primary_key=True)
