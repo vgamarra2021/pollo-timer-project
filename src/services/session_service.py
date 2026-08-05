@@ -3,40 +3,50 @@ from sqlalchemy.orm import Session as DBSession
 from db.models.session import Session as TimerSession
 from db.models.action import Action
 from sqlalchemy import select
+from sqlalchemy import update
     
 def create_action(timer_session: TimerSession, type: str, engine):
-    session = DBSession(engine)
-    action_entity = Action(
-        type=type,
-        created_at=datetime.now(),
-        session=timer_session
-    )
-    session.add(action_entity)
-    session.commit()
-    return action_entity
+    with DBSession(engine) as db_session:
+        action_entity = Action(
+            type=type,
+            created_at=datetime.now(),
+            session=timer_session
+        )
+        db_session.add(action_entity)
+        db_session.commit()
+        return action_entity
 
 def create_session(engine):
-    session = DBSession(engine)
-    session_entity = TimerSession(
-        is_active=True,
-        started_at=datetime.now(),
-    )
-    session.add(session_entity)
-    session.commit()
-    return session_entity
+    with DBSession(engine) as db_session:
+        session_entity = TimerSession(
+            is_active=True,
+            started_at=datetime.now(),
+        )
+        db_session.add(session_entity)
+        db_session.commit()
+        return session_entity
 
 def get_last_session(engine):
-    session = DBSession(engine)
-    stmt = select(TimerSession).order_by(TimerSession.started_at.desc()).limit(1)
-    return session.scalars(stmt).first()
+    with DBSession(engine) as db_session:
+        stmt = select(TimerSession).order_by(TimerSession.started_at.desc()).limit(1)
+        return db_session.scalars(stmt).first()
 
 def complete_session(timer_session: TimerSession, engine):
-    #Actualizar la session pasada como parámetro en la BD, seteando is_active a False y finish_at a la fecha actual
-    session = DBSession(engine)
-    timer_session.is_active = False
-    timer_session.finished_at = datetime.now()
-    timer_session.seconds_duration = (timer_session.finished_at - timer_session.started_at).total_seconds()
-    session.commit()
+    finished_at = datetime.now()
+
+    with DBSession(engine) as db_session:
+        stmt = (
+            update(TimerSession)
+            .where(TimerSession.session_id == timer_session.session_id)
+            .values(
+                is_active=False,
+                finished_at=finished_at,
+                duration_seconds=int((finished_at - timer_session.started_at).total_seconds())
+            )
+        )
+
+        db_session.execute(stmt)
+        db_session.commit()
 
 def process_action(type: str, engine):
     last_session = get_last_session(engine)
