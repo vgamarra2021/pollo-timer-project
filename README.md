@@ -5,7 +5,7 @@ Este proyecto sirve como MVP para registrar el avance del pollo en programación
 
 Inicializar BD con el init.sql (Listo)
 Instalar y configurar dotenv (Listo)
-Crear function para llamar a DEEP SEEK (Gabriel):
+Crear function para llamar a DEEP SEEK (Gabriel: en proceso):
 -https://api-docs.deepseek.com/
 
 
