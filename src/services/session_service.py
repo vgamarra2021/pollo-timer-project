@@ -29,9 +29,14 @@ def create_session(engine):
 def get_last_session(engine):
     with DBSession(engine) as db_session:
         stmt = select(TimerSession).order_by(TimerSession.started_at.desc()).limit(1)
-        return db_session.scalars(stmt).first()
+        last_session = db_session.scalars(stmt).first()
+        print(last_session)
+        print(last_session.session_id)
+        return last_session
 
 def complete_session(timer_session: TimerSession, engine):
+    print(timer_session)
+    print(timer_session.id)
     finished_at = datetime.now()
 
     with DBSession(engine) as db_session:
@@ -41,7 +46,7 @@ def complete_session(timer_session: TimerSession, engine):
             .values(
                 is_active=False,
                 finished_at=finished_at,
-                duration_seconds=int((finished_at - timer_session.started_at).total_seconds())
+                seconds_duration=int((finished_at - timer_session.started_at).total_seconds())
             )
         )
 
