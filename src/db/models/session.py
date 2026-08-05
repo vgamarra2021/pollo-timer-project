@@ -4,8 +4,10 @@ from sqlalchemy import DateTime
 from sqlalchemy import Numeric
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
 
 from db.models.base import Base
+
 
 class Session(Base):
     __tablename__ = "session"
@@ -14,3 +16,4 @@ class Session(Base):
     is_active: Mapped[Optional[bool]] = mapped_column(Boolean)
     started_at: Mapped[Optional[DateTime]] = mapped_column(DateTime)
     finish_at: Mapped[Optional[DateTime]] = mapped_column(DateTime)
+    actions: Mapped[list["Action"]] = relationship(back_populates="session")
