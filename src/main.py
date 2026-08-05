@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 from db.init_database import initialize_database
-from services.llm_client import call_llm_with_sdk, call_llm_with_http
+from services.llm_service import call_llm_with_sdk, call_llm_with_http
 import os
 
 # Cargar las variables de entorno desde el archivo .env
@@ -10,6 +10,10 @@ load_dotenv()
 initialize_database()
 
 #Prueba
-call_llm_with_sdk()
-call_llm_with_http()
+print(call_llm_with_sdk("hola como estas?"))
+#call_llm_with_http()
+
+#functions
+
+
 
