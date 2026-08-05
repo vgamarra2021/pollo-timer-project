@@ -1,7 +1,31 @@
-def call_llm_with_sdk():
-    print('sdk')
+import os
+
+from dotenv import load_dotenv
+from openai import OpenAI
+
+
+load_dotenv("src/.env")
+
+
+def call_llm_with_sdk(message: str) -> str:
+    client = OpenAI(
+        api_key=os.getenv("DEEPSEEK_API_KEY"),
+        base_url="https://api.deepseek.com",
+    )
+
+    response = client.chat.completions.create(
+        model="deepseek-chat",
+        messages=[
+            {
+                "role": "user",
+                "content": message,
+            }
+        ],
+    )
+
+    return response.choices[0].message.content
+
+
+def call_llm_with_http(message: str) -> str:
     pass
 
-def call_llm_with_http():
-    print('http')
-    pass
