@@ -12,8 +12,6 @@ def initialize_database(sql_file_path=_SQL_PATH):
     usando la conexión nativa (raw_connection) del engine de SQLAlchemy.
     """
 
-    print(sql_file_path)
-
     engine = create_engine(DATABASE_URL)
 
     try:
