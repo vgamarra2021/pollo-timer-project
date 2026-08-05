@@ -15,7 +15,7 @@ print(DATABASE_URL)
 # Inicializar BD 
 initialize_database()
 
-#Prueba
+#PRUEBA ---------------------------------------------
 #print(call_llm_with_sdk("hola como estas?"))
 #call_llm_with_http()
 
@@ -77,3 +77,13 @@ stmt = (
 
 for session in session.scalars(stmt):
     print(session)
+    
+    
+#-------------------------------------------
+
+#Logic
+from services.session_service import process_action
+process_action("play")
+process_action("pause")
+process_action("play")
+process_action("stop")
