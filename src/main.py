@@ -1,9 +1,9 @@
 import time
-
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from db.init_database import initialize_database
 from services.llm_service import call_llm_with_sdk, call_llm_with_http
+from services.session_service import process_action
 from pathlib import Path
 
 # Cargar las variables de entorno desde el archivo .env
@@ -16,7 +16,6 @@ DATABASE_URL = f"sqlite:///{DB_PATH}"
 print(DATABASE_URL)
 
 # Inicializar BD
-
 if(DB_PATH.exists()):
     print("Database already exists. Skipping initialization.")
 else:
@@ -26,7 +25,7 @@ else:
 engine = create_engine(DATABASE_URL, echo=True)
 
 #Logic
-from services.session_service import process_action
+
 process_action("play", engine)
 process_action("pause", engine)
 time.sleep(2)
