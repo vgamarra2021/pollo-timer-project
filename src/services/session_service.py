@@ -37,9 +37,8 @@ def create_action(timer_session: TimerSession, type: str, engine):
         db_session.commit()
 
 
-def complete_session(timer_session: TimerSession, engine):
+def complete_session(timer_session: TimerSession, engine, seconds_duration: int = 0):
     finished_at = datetime.now()
-
     with DBSession(engine) as db_session:
         session_to_complete = db_session.merge(timer_session)
         stmt = (
@@ -48,16 +47,14 @@ def complete_session(timer_session: TimerSession, engine):
             .values(
                 is_active=False,
                 finish_at=finished_at,
-                seconds_duration=int(
-                    (finished_at - session_to_complete.started_at).total_seconds()
-                ),
+                seconds_duration=seconds_duration
             )
         )
         db_session.execute(stmt)
         db_session.commit()
 
 
-def process_action(type: str, engine):
+def process_action(type: str, engine, seconds_duration=0):
     last_session = get_last_session(engine)
 
     if type == "play":
@@ -72,4 +69,4 @@ def process_action(type: str, engine):
 
     elif type == "stop":
         create_action(last_session, type, engine)
-        complete_session(last_session, engine)
+        complete_session(last_session, engine, seconds_duration)
