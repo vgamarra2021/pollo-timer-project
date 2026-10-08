@@ -21,9 +21,7 @@ load_dotenv()
 DB_PATH = Path(__file__).resolve().parent / "db/app.db"
 DATABASE_URL = f"sqlite:///{DB_PATH}"
 
-print(DATABASE_URL)
-
-# Inicializar BD
+#------- INIT BD ---------
 if(DB_PATH.exists()):
     print("Database already exists. Skipping initialization.")
 else:
@@ -32,17 +30,18 @@ else:
 
 engine = create_engine(DATABASE_URL, echo=False)
 
+#------- UI ---------
+
 import flet as ft
 
-def main(page: ft.Page):
-    page.title = "Pollo Timer App - Home"
-    page.vertical_alignment = ft.MainAxisAlignment.CENTER
-    page.window.width = 800
-    page.window.height = 300
-
+@ft.component
+def Home():
     # Estado del timer
     timer_running = False
     timer_elapsed_seconds = 0
+
+    def historic_click(e):
+        print("Historic button clicked")
 
     async def timer_loop():
         nonlocal timer_elapsed_seconds
@@ -56,8 +55,14 @@ def main(page: ft.Page):
                 )
                 page.update()
 
-    def historic_click(e):
-        print("Historic button clicked")
+    def stop_click(e):
+        print('click en stop')
+        nonlocal timer_running, timer_elapsed_seconds
+        process_action("stop", engine, timer_elapsed_seconds)
+        timer_elapsed_seconds = 0
+        toggle_button.icon = ft.Icons.PLAY_ARROW
+        timer.value = "00:00:00"
+        timer_running = False
 
     def start_pause_click(e):
         nonlocal timer_running
@@ -75,34 +80,17 @@ def main(page: ft.Page):
             timer_running = False
             process_action("pause", engine)
 
-    def stop_click(e):
-        print('click en stop')
-        nonlocal timer_running, timer_elapsed_seconds
-        process_action("stop", engine, timer_elapsed_seconds)
-        timer_elapsed_seconds = 0
-        toggle_button.icon = ft.Icons.PLAY_ARROW
-        timer.value = "00:00:00"
-        timer_running = False
-        
-        
     button_style = ft.ButtonStyle(
         icon_size=150,
         padding=30,
         alignment=ft.Alignment.CENTER,
         shape=ft.RoundedRectangleBorder(radius=10)
     )
-    
-    toggle_button = ft.Button(
-        content="",
-        icon=ft.Icons.PLAY_ARROW,
-        on_click=start_pause_click,
-        icon_color=ft.Colors.WHITE,
-        style=button_style
-    )
-    
+
     timer = ft.Text("00:00:00", size=24, weight=ft.FontWeight.W_600)
 
-    page.add(
+
+    return (
         ft.Row(
             spacing=30,
             alignment=ft.MainAxisAlignment.CENTER,
@@ -121,16 +109,40 @@ def main(page: ft.Page):
                     icon_color=ft.Colors.WHITE,
                     style=button_style
                 ),
-                toggle_button,
+                ft.Button(
+                    content="",
+                    icon=ft.Icons.PLAY_ARROW,
+                    on_click=start_pause_click,
+                    icon_color=ft.Colors.WHITE,
+                    style=button_style
+                ),
                 ft.Button(
                     content="",
                     icon=ft.Icons.STOP,
                     on_click=stop_click,
                     icon_color=ft.Colors.WHITE,
                     style=button_style
-                    ),
+                ),
             ],
         )
     )
+
+        
+
+@ft.component
+def About():
+    return ft.Button("Go to Home", on_click=lambda: ft.context.page.navigate("/"))
+
+
+def main(page: ft.Page):
+    page.title = "Pollo Timer App - Home"
+    page.vertical_alignment = ft.MainAxisAlignment.CENTER
+    page.window.width = 800
+    page.window.height = 300
+
+    page.render(ft.Router([
+        ft.Route(index=True, path="home", component=Home),
+        ft.Route(path="historic", component=About),
+    ]))
 
 ft.run(main)
