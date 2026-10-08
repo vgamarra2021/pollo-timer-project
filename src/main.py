@@ -39,6 +39,7 @@ def Home():
     # Estado del timer
     timer_running = False
     timer_elapsed_seconds = 0
+    page = ft.context.page
 
     def historic_click(e):
         print("Historic button clicked")
@@ -88,6 +89,13 @@ def Home():
     )
 
     timer = ft.Text("00:00:00", size=24, weight=ft.FontWeight.W_600)
+    toggle_button = ft.Button(
+        content="",
+        icon=ft.Icons.PLAY_ARROW,
+        on_click=start_pause_click,
+        icon_color=ft.Colors.WHITE,
+        style=button_style
+    )
 
 
     return (
@@ -109,13 +117,7 @@ def Home():
                     icon_color=ft.Colors.WHITE,
                     style=button_style
                 ),
-                ft.Button(
-                    content="",
-                    icon=ft.Icons.PLAY_ARROW,
-                    on_click=start_pause_click,
-                    icon_color=ft.Colors.WHITE,
-                    style=button_style
-                ),
+                toggle_button,
                 ft.Button(
                     content="",
                     icon=ft.Icons.STOP,
@@ -134,15 +136,20 @@ def About():
     return ft.Button("Go to Home", on_click=lambda: ft.context.page.navigate("/"))
 
 
+@ft.component
+def App():
+    return ft.Router([
+        ft.Route(index=True, path="home", component=Home),
+        ft.Route(path="historic", component=About),
+    ])
+
+
 def main(page: ft.Page):
     page.title = "Pollo Timer App - Home"
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.window.width = 800
     page.window.height = 300
 
-    page.render(ft.Router([
-        ft.Route(index=True, path="home", component=Home),
-        ft.Route(path="historic", component=About),
-    ]))
+    page.render(App)
 
 ft.run(main)
