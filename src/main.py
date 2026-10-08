@@ -36,50 +36,45 @@ import flet as ft
 
 @ft.component
 def Home():
-    # Estado del timer
-    timer_running = False
-    timer_elapsed_seconds = 0
     page = ft.context.page
+    store = page.session.store
+    timer_running = bool(store.get("timer_running") or False)
+    timer_elapsed_seconds = int(store.get("timer_elapsed_seconds") or 0)
+
+    def render_app():
+        page.render(App)
 
     def historic_click(e):
-        print("Historic button clicked")
+        ft.context.page.navigate("/historic")
 
     async def timer_loop():
-        nonlocal timer_elapsed_seconds
-        while timer_running:
+        while bool(page.session.store.get("timer_running") or False):
             await asyncio.sleep(1)
-            if timer_running:
-                timer_elapsed_seconds += 1
-                timer.value = time.strftime(
-                    "%H:%M:%S",
-                    time.gmtime(timer_elapsed_seconds)
-                )
-                page.update()
+            if bool(page.session.store.get("timer_running") or False):
+                current_elapsed = int(page.session.store.get("timer_elapsed_seconds") or 0)
+                page.session.store.set("timer_elapsed_seconds", current_elapsed + 1)
+                render_app()
 
     def stop_click(e):
         print('click en stop')
-        nonlocal timer_running, timer_elapsed_seconds
         process_action("stop", engine, timer_elapsed_seconds)
-        timer_elapsed_seconds = 0
-        toggle_button.icon = ft.Icons.PLAY_ARROW
-        timer.value = "00:00:00"
-        timer_running = False
+        page.session.store.set("timer_running", False)
+        page.session.store.set("timer_elapsed_seconds", 0)
+        render_app()
 
     def start_pause_click(e):
-        nonlocal timer_running
-        
-        if(toggle_button.icon == ft.Icons.PLAY_ARROW): #Sea play
+        if not timer_running: #Sea play
             print('click en play')
-            toggle_button.icon = ft.Icons.PAUSE
-            timer_running = True
+            page.session.store.set("timer_running", True)
             asyncio.create_task(timer_loop())
             process_action("play", engine)
+            render_app()
             
         else: #Sea pause
             print('click en pause')
-            toggle_button.icon = ft.Icons.PLAY_ARROW
-            timer_running = False
+            page.session.store.set("timer_running", False)
             process_action("pause", engine)
+            render_app()
 
     button_style = ft.ButtonStyle(
         icon_size=150,
@@ -88,45 +83,52 @@ def Home():
         shape=ft.RoundedRectangleBorder(radius=10)
     )
 
-    timer = ft.Text("00:00:00", size=24, weight=ft.FontWeight.W_600)
+    timer = ft.Text(
+        time.strftime("%H:%M:%S", time.gmtime(timer_elapsed_seconds)),
+        size=24,
+        weight=ft.FontWeight.W_600
+    )
     toggle_button = ft.Button(
         content="",
-        icon=ft.Icons.PLAY_ARROW,
+        icon=ft.Icons.PAUSE if timer_running else ft.Icons.PLAY_ARROW,
         on_click=start_pause_click,
         icon_color=ft.Colors.WHITE,
         style=button_style
     )
 
 
-    return (
-        ft.Row(
-            spacing=30,
-            alignment=ft.MainAxisAlignment.CENTER,
-            controls=[
-                timer
-            ],
-        ),
-        ft.Row(
-            spacing=30,
-            alignment=ft.MainAxisAlignment.CENTER,
-            controls=[
-                ft.Button(
-                    content="",
-                    icon=ft.Icons.HISTORY,
-                    on_click=historic_click,
-                    icon_color=ft.Colors.WHITE,
-                    style=button_style
-                ),
-                toggle_button,
-                ft.Button(
-                    content="",
-                    icon=ft.Icons.STOP,
-                    on_click=stop_click,
-                    icon_color=ft.Colors.WHITE,
-                    style=button_style
-                ),
-            ],
-        )
+    return ft.Column(
+        spacing=30,
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        alignment=ft.MainAxisAlignment.CENTER,
+        controls=[
+            ft.Row(
+                spacing=30,
+                alignment=ft.MainAxisAlignment.CENTER,
+                controls=[timer],
+            ),
+            ft.Row(
+                spacing=30,
+                alignment=ft.MainAxisAlignment.CENTER,
+                controls=[
+                    ft.Button(
+                        content="",
+                        icon=ft.Icons.HISTORY,
+                        on_click=historic_click,
+                        icon_color=ft.Colors.WHITE,
+                        style=button_style
+                    ),
+                    toggle_button,
+                    ft.Button(
+                        content="",
+                        icon=ft.Icons.STOP,
+                        on_click=stop_click,
+                        icon_color=ft.Colors.WHITE,
+                        style=button_style
+                    ),
+                ],
+            ),
+        ],
     )
 
         
@@ -148,7 +150,7 @@ def main(page: ft.Page):
     page.title = "Pollo Timer App - Home"
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.window.width = 800
-    page.window.height = 300
+    page.window.height = 350
 
     page.render(App)
 
