@@ -134,7 +134,7 @@ def Home():
         
 
 @ft.component
-def About():
+def Historic():
     return ft.Button("Go to Home", on_click=lambda: ft.context.page.navigate("/"))
 
 
@@ -142,7 +142,7 @@ def About():
 def App():
     return ft.Router([
         ft.Route(index=True, path="home", component=Home),
-        ft.Route(path="historic", component=About),
+        ft.Route(path="historic", component=Historic),
     ])
 
 
